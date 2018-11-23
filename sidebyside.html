@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<head>
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+	<link href="https://fonts.googleapis.com/css?family=Rubik:300,400,500,700" rel="stylesheet">
+	<style id="jsbin-css">
+
+	body, html {
+		font-family: 'Rubik', sans-serif;
+	}
+
+	.chartTitle {
+		margin-right: 35px;
+		font-weight: 300;
+		font-size: 14px;
+	}
+
+	.svgRow {
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
+		align-items: center;
+		height: 150px;
+	}
+
+	.chart {
+		display: flex;
+		flex-direction: column;
+	}
+
+	.categoryParent {
+		display: flex;
+	}
+
+	.labelP {
+		text-align: right;
+	}
+
+	.textCategory {
+		font-size: 16px;
+		font-weight: 500;
+		color: #616161;
+	}
+
+	.textPerc {
+		font-size: 20px;
+		font-weight: 300;
+	}
+
+	.svgImage {
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
+		align-items: flex-end;
+		margin-right: 15px;
+		margin-bottom: 20px;
+	}
+
+	.categoryRow {
+		align-items: center;
+		justify-content: center;
+		margin-bottom: 20px;
+	}
+
+	.labelDiv {
+		width: 150px;
+		margin-right: 5px;
+	}
+
+	</style>
+</head>
+
+<body>
+	<div class="chart"></div>
+</body>
+
+<script src="http://d3js.org/d3.v4.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<script>
+	d3.csv('topDownData.csv', function(error, data){
+
+		let iconPathArray = ["M318.237,553c0,0,17.7-176.3,53.8-220.6c-6.399,16.7-8,34.1-6.199,53.7c1.5,16.8,7.699,30.2,10.699,46.7    c-6.699,41.7-32.699,138.6-66.399,188.6c-20.601,30.601,9.899,29.301,54.8,21.101l24.5,270.1c0,47.2,44.8,47.2,44.8-0.2    L449.338,625c5.6-1.601,9.6-2.8,11.3-3.3c1.7,0.5,5.7,1.699,11.3,3.3l15,287.5c0,47.399,43.799,47.399,43.799,0.2l24.5-270.101    c10,1.8,19.4,3.3,27.701,4.2v153.3c0,10.9,8.9,19.8,19.799,19.8h59c10.9,0,19.801-8.899,19.801-19.8v-167.7    c0-10.899-8.9-19.8-19.801-19.8h-9.5v-41.2c0-1.8-0.299-3.5-0.699-5.199c1.9-4.101,2.9-9,2.9-14.801    c-0.301-5.199-0.701-10.399-1.1-15.5c-4.602-59.399-12.102-119-25-176.899c-8-36.3-15.602-74.8-35.701-105.9    c-17.9-27.7-41.699-37.1-68.4-45.4c-12-3.7-24.898,2.7-29.1,14.6c-7.4,20.8-18.6,57-26.2,82.3c-2.5,8.4-14.4,8.4-16.9,0    c-7.699-25.3-18.899-61.5-26.199-82.3c-4.2-11.9-17.101-18.4-29.101-14.6c-26.7,8.3-50.5,17.7-68.399,45.4    c-20.101,31.1-27.601,69.5-35.7,105.9c-12.8,58-20.3,117.5-25,176.899c-0.4,5.2-0.8,10.301-1.1,15.5    C266.638,591.3,318.237,590.899,318.237,553z M549.038,332.4c36.1,44.3,53.801,220.6,53.801,220.6c0,10.3,3.799,17.8,9.398,22.5    v37h-6.799c-31-51.9-54.5-140.4-60.801-179.7c3-16.5,9.201-29.9,10.701-46.7C557.038,366.5,555.438,349.1,549.038,332.4z","M402.737,161.9c15.5,13.5,35.8,36.4,57.9,36.4c22.099,0,42.4-22.9,57.9-36.4c15.1,7.9,37.199,15.8,58.301,6.5    c-4.301-11.4-7.9-23.2-10.9-35c-8.1-31.7-5.1-64-26.201-91.2c-19-24.5-48.6-42.2-79.099-42.2c-30.5,0-60.101,17.6-79.101,42.2    c-21.1,27.2-18,59.5-26.199,91.2c-3,11.8-6.601,23.6-10.9,35C365.438,177.6,387.638,169.8,402.737,161.9z"]
+
+		// convert percentages to numbers
+		data.forEach(d => {
+			d.Percentage = + d.Percentage;
+		})
+		// sort descending
+		data.sort(function(a, b){
+				return b.Percentage - a.Percentage
+		});
+
+		var cat1 = data.filter(function(item){
+    	return item.Section==="cat1";
+		});
+
+		var cat2 = data.filter(function(item){
+    	return item.Section==="cat2";
+		});
+
+		console.log(cat2);
+
+		createSection(cat1, "cat1", "15-24 Years");
+		createSection(cat2, "cat2", "25-64 Years");
+
+		function createSection(catData, id, title) {
+			console.log('invoked');
+			d3.select('.chart')
+				.append('div')
+				.classed('categoryParent', true)
+				.attr('id', id);
+
+			var selectID = "#" + id;
+
+			d3.select(selectID)
+				.append('div')
+				.html(function() {
+					return '<h1 class="chartTitle">'+ title + '</h1>'
+				});
+
+			d3.select(selectID)
+				.selectAll('.valueRow')
+				.data(catData)
+				.enter()
+				.append('div')
+				.classed('svgRow', true)
+
+			d3.select(selectID)
+				.selectAll('.svgRow')
+				.append('div')
+				.classed('svgImage', true)
+				.style('width', '50px')
+				.html(function(d) {
+					return '<img src="./' + d.Avatar + '.svg" style="width: '+ d.Percentage/100 * 150 +'px"></img>'
+				});
+
+			d3.select(selectID)
+				.selectAll('.svgRow')
+				.append('div')
+				.classed('categoryRow', true)
+				.style('display', 'flex');
+
+
+			d3.select(selectID)
+				.selectAll('.categoryRow')
+				.html(function(d){
+					console.log(d);
+					return `<p class = labelP><span class = textPerc><span> ${d.Percentage}% </span></p>`
+				})
+		}
+
+	})
+</script>
